@@ -36,3 +36,39 @@ button{cursor:pointer}button.main{background:var(--ink);color:var(--paper)}butto
 #print .cover{page-break-after:always;padding-top:200px;text-align:center}#print .item{page-break-inside:avoid;margin-bottom:24px;height:4.3in}
 #print img{max-width:100%;max-height:3.3in;display:block;margin:0 auto 6px}#print .item.pb{page-break-after:always}}
 
+:root{--accent:#df735f;--blue:#4f6f9f;--shadow:0 12px 30px rgba(35,48,74,.10)}
+body{font-family:Inter,Verdana,Arial,sans-serif;background-color:#f7f3e8;background-image:linear-gradient(90deg,transparent 0 43px,#e8a5a3 43px 44px,transparent 44px),repeating-linear-gradient(transparent 0 31px,#e6dcc3 31px 32px)}
+body:before{left:43px;background:#d9777a}
+main{max-width:1100px;padding-top:28px}
+.top{padding-bottom:16px;border-bottom:1px solid rgba(35,48,74,.12)}
+h1{font-size:34px;letter-spacing:-.5px}
+h2{font-size:25px;margin-top:24px}
+nav button,.panel button,.cards+* button{transition:.18s ease}
+button,select,input,textarea{min-height:38px}
+button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(35,48,74,.12)}
+button.main{border-color:#23304a;background:#23304a}
+button.on{border-color:#b34b3f;background:#b34b3f;color:white}
+.cards{gap:16px}
+.nb{min-height:112px;border:none;border-left-width:8px;border-radius:8px;padding:18px;box-shadow:var(--shadow)}
+.nb:hover{transform:translateY(-4px)}
+.sheet{max-width:none;border-left:5px solid #df735f;border-radius:8px;box-shadow:var(--shadow);transform:none}
+.panel{border:1px solid rgba(35,48,74,.18);border-radius:12px;box-shadow:var(--shadow)}
+.voice-panel{background:linear-gradient(135deg,var(--card),rgba(223,115,95,.08))}
+.voice-panel textarea{resize:vertical;border-radius:8px}
+.voice-panel b{font-size:18px}
+.msg{align-self:center}
+.grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.ph{border-radius:4px}
+input[type=search],textarea,input[type=file]{width:min(100%,520px)}
+@media(max-width:700px){
+  body:before{left:18px}
+  main{padding:18px 14px 32px 30px}
+  h1{font-size:28px}
+  .top nav{width:100%}
+  .top nav button{flex:1}
+  .cards,.grid{grid-template-columns:1fr}
+  .panel .row{align-items:stretch}
+  .panel .row>*{max-width:100%}
+  .tabs{width:100%;overflow-x:auto}
+  .tabs button{white-space:nowrap}
+}

@@ -145,6 +145,7 @@ const DICT_ERR={
 function voicePanel(name){
   const subjectData=subjects.find(x=>x.name===name);
   const p=el('div','panel');
+  p.classList.add('voice-panel');
   p.appendChild(el('b',0,'Notas por voz'));
 
   const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -180,10 +181,6 @@ function voicePanel(name){
       msg.textContent='Para que el micrófono funcione, abre la página con Live Server (localhost).';
     }
     try{
-      if(navigator.mediaDevices?.getUserMedia){
-        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-        stream.getTracks().forEach(track=>track.stop());
-      }
       recognition=new SpeechRecognition();
       recognition.lang='es-CO';
       recognition.continuous=true;
@@ -218,6 +215,11 @@ function voicePanel(name){
         }
         if(event.error==='aborted' && shouldListen){
           msg.textContent='El dictado se reiniciará automáticamente.';
+          return;
+        }
+        if(event.error==='network'){
+          msg.textContent='El navegador no pudo conectar con su servicio de dictado. Prueba de nuevo en Chrome normal, abre una conexión HTTPS y revisa antivirus o VPN.';
+          shouldListen=false;
           return;
         }
         shouldListen=false;

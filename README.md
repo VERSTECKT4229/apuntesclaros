@@ -14,6 +14,7 @@ Abre la carpeta en Visual Studio Code y ejecuta `index.html` con Live Server.
 - Marcar apuntes como revisados.
 - Tomar notas con dictado por voz compatible con Chrome y Edge.
 - Ejecutar el dictado desde `localhost` o una dirección HTTPS para habilitar el micrófono.
+- Abrir la aplicación en Chrome o Edge. El dictado integrado depende del servicio de voz de cada navegador.
 - Exportar e importar respaldos JSON.
 - Crear un paquete imprimible y PDF de estudio.
 
