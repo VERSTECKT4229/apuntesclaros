@@ -1,4 +1,4 @@
-// ==LOGIC==
+﻿// ==LOGIC==
 const NONE = 'Sin clasificar';
 const MAX_BYTES = 8 * 1024 * 1024;
 function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
