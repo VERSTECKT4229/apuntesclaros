@@ -166,11 +166,13 @@ function voicePanel(name){
   let shouldListen=false;
   let baseText='';
   let lastFinal='';
+  let restartTimer=null;
 
   mic.onclick=async()=>{
     if(!SpeechRecognition){msg.textContent='Dictado no disponible en este navegador.';return;}
     if(recognition){
       shouldListen=false;
+      clearTimeout(restartTimer);
       recognition.stop();
       return;
     }
@@ -191,6 +193,11 @@ function voicePanel(name){
       baseText=ta.value.trim();
       lastFinal='';
 
+      recognition.onstart=()=>{
+        mic.textContent='Parar';
+        mic.classList.add('on');
+        msg.textContent='Escuchando... habla ahora.';
+      };
       recognition.onresult=event=>{
         let interim='';
         let final='';
@@ -209,6 +216,10 @@ function voicePanel(name){
           msg.textContent='No escuché nada todavía. Sigue hablando o pulsa Parar.';
           return;
         }
+        if(event.error==='aborted' && shouldListen){
+          msg.textContent='El dictado se reiniciará automáticamente.';
+          return;
+        }
         shouldListen=false;
         msg.textContent=DICT_ERR[event.error] || ('No fue posible dictar: '+event.error);
       };
@@ -217,8 +228,11 @@ function voicePanel(name){
         mic.textContent='Dictar';
         mic.classList.remove('on');
         if(shouldListen){
-          shouldListen=false;
-          msg.textContent='El dictado terminó. Revisa el texto y guárdalo.';
+          msg.textContent='Reconectando el dictado...';
+          restartTimer=setTimeout(()=>{
+            if(!shouldListen)return;
+            mic.click();
+          },350);
         }
       };
       recognition.start();
@@ -234,7 +248,7 @@ function voicePanel(name){
   save.onclick=async()=>{
     const text=ta.value.trim();
     if(!text){msg.textContent='Escribe o dicta una nota antes de guardar.';return;}
-    if(recognition){shouldListen=false;recognition.stop();}
+    if(recognition){shouldListen=false;clearTimeout(restartTimer);recognition.stop();}
     subjectData.voiceNotes=[...(subjectData.voiceNotes||[]),{
       id:Date.now()+'-'+Math.random().toString(36).slice(2,7),
       text,corte:+cs.value,date:new Date().toISOString()
@@ -327,4 +341,3 @@ $('nHome').onclick=()=>go('home');$('nUp').onclick=()=>go('upload',null);$('nSub
   const repaired=await repairStoredTexts();
   await refresh();
   if(repaired){console.info('Se corrigieron textos guardados con una codificación antigua.');}}catch(e){$('v').textContent='No se pudo abrir el almacenamiento local: '+e.message;}})();
-
