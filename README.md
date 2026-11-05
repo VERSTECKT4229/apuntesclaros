@@ -12,7 +12,8 @@ Abre la carpeta en Visual Studio Code y ejecuta `index.html` con Live Server.
 - Clasificar apuntes por materia.
 - Filtrar por corte y buscar notas.
 - Marcar apuntes como revisados.
-- Tomar notas mediante dictado en navegadores compatibles.
+- Tomar notas con dictado por voz compatible con Chrome y Edge.
+- Ejecutar el dictado desde `localhost` o una dirección HTTPS para habilitar el micrófono.
 - Exportar e importar respaldos JSON.
 - Crear un paquete imprimible y PDF de estudio.
 
