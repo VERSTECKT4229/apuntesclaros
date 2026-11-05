@@ -17,6 +17,14 @@ Abre la carpeta en Visual Studio Code y ejecuta `index.html` con Live Server.
 - Exportar e importar respaldos JSON.
 - Crear un paquete imprimible y PDF de estudio.
 
+## Demo para compartir
+
+Abre esta dirección para probar la aplicación desde el navegador:
+
+https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
+
+Al abrirla, haz clic en **Open the page** si aparece el aviso de seguridad de raw.githack.
+
 ## Publicar en GitHub
 
 ```bash
