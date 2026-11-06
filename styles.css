@@ -1,5 +1,5 @@
 :root{--paper:#fbf6e9;--line:#e6dcc3;--ink:#23304a;--mu:#7a7566;--red:#d9777a;--card:#fffdf7}
-@media (prefers-color-scheme:dark){:root{--paper:#25272c;--line:#33363d;--ink:#e8e4d8;--mu:#a09c90;--card:#2d3036}}
+@media (prefers-color-scheme:dark){:root{--paper:#25272c;--line:#42454d;--ink:#f0ede4;--mu:#bbb7ab;--card:#34383f}}
 *{box-sizing:border-box}
 body{margin:0;color:var(--ink);font-family:Verdana,Arial,sans-serif;background:var(--paper) repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);min-height:100vh}
 body:before{content:"";position:fixed;left:44px;top:0;bottom:0;width:2px;background:var(--red);opacity:.5}
@@ -24,7 +24,7 @@ button{cursor:pointer}button.main{background:var(--ink);color:var(--paper)}butto
 .ph{position:relative;background:#fff;padding:10px 10px 8px;box-shadow:2px 4px 10px #0004;color:#222;transform:rotate(var(--r))}
 .ph img{width:100%;height:150px;object-fit:cover;display:block;cursor:zoom-in}
 .ph:before{content:"";position:absolute;top:-9px;left:50%;width:70px;height:18px;margin-left:-35px;background:var(--c);opacity:.7;transform:rotate(-3deg)}
-.ph.done{opacity:.55}.ph.done:after{content:"âœ“ revisada";position:absolute;right:8px;top:118px;background:#fffc;border:2px solid #2a8a4a;color:#2a8a4a;padding:1px 6px;font-weight:bold;transform:rotate(-8deg)}
+.ph.done{opacity:.55}.ph.done:after{content:"✓ revisada";position:absolute;right:8px;top:118px;background:#fffc;border:2px solid #2a8a4a;color:#2a8a4a;padding:1px 6px;font-weight:bold;transform:rotate(-8deg)}
 .ph .t{font-family:Georgia,serif;margin:6px 0 2px;font-size:14px}.ph .row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .ph button,.ph select{font-size:11px;padding:3px 6px;color:#222;background:#fff;border-color:#222}
 .panel{background:var(--card);border:1.5px dashed var(--ink);padding:14px;border-radius:6px;margin:12px 0}
@@ -71,4 +71,17 @@ input[type=search],textarea,input[type=file]{width:min(100%,520px)}
   .panel .row>*{max-width:100%}
   .tabs{width:100%;overflow-x:auto}
   .tabs button{white-space:nowrap}
+}
+
+@media (prefers-color-scheme:dark){
+  body{background-color:#25272c;background-image:linear-gradient(90deg,transparent 0 43px,#a84f56 43px 44px,transparent 44px),repeating-linear-gradient(transparent 0 31px,#42454d 31px 32px)}
+  .top{border-bottom-color:rgba(240,237,228,.12)}
+  .nb{box-shadow:0 12px 30px rgba(0,0,0,.28)}
+  .panel{border-color:rgba(240,237,228,.18);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+  textarea,input,select,button{color-scheme:dark}
+  textarea,input{background-color:#34383f;color:#f0ede4;border-color:#777c86}
+  button{color:#f0ede4;border-color:#777c86}
+  button.main{background:#5f82ae;border-color:#5f82ae;color:#fff}
+  button.on{background:#b34b3f;border-color:#b34b3f;color:#fff}
+  .sheet{background:#fff0a8;color:#3b3412}
 }
