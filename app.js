@@ -324,8 +324,9 @@ function rotatePhoto(photo){
 function upload(v){
   v.append(el('h2',0,'Subir fotos'));const p=el('div','panel');
   p.innerHTML='<div class="row"><input type="file" id="f" accept="image/*" capture="environment" multiple><button id="camera" type="button">Abrir cámara</button></div><div class="row"><input id="n" size="30" placeholder="Nota (ej: integrales dobles, clase 12)"></div><div class="row"><select id="s"></select><select id="c"><option value="1">Corte 1</option><option value="2">Corte 2</option><option value="3">Corte 3</option></select><button class="main" id="go">Guardar</button></div><div class="msg" id="m"></div>';
+  v.appendChild(p);
   $('camera').onclick=()=>{$('f').click();};
-  v.appendChild(p);const s=$('s');
+  const s=$('s');
   [['auto','Detectar materia automáticamente'],...subjects.map(x=>[x.name,x.name])].forEach(([a,b])=>{const o=el('option',0,b);o.value=a;s.appendChild(o);});
   if(S.subj&&subjects.some(x=>x.name===S.subj))s.value=S.subj;
   $('go').onclick=async()=>{

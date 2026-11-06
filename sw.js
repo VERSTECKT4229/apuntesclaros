@@ -1,4 +1,4 @@
-const CACHE = 'apuntesclaros-v4';
+const CACHE = 'apuntesclaros-v5';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {
