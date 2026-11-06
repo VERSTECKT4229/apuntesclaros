@@ -26,6 +26,13 @@ https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
 
 Al abrirla, haz clic en **Open the page** si aparece el aviso de seguridad de raw.githack.
 
+## Aplicación instalable
+
+- Abre ApuntesClaros desde HTTPS o Live Server.
+- Cuando aparezca el aviso, pulsa **Instalar**.
+- También puedes usar el menú del navegador para **Instalar aplicación**.
+- Los archivos principales se guardan en caché para continuar usándola sin conexión.
+
 ## Publicar en GitHub
 
 ```bash

@@ -336,6 +336,34 @@ function summary(v){
     $('rm').textContent='En la ventana de impresión elige "Guardar como PDF".';setTimeout(()=>window.print(),300);};
 }
 $('nHome').onclick=()=>go('home');$('nUp').onclick=()=>go('upload',null);$('nSub').onclick=()=>go('subjects');$('big').onclick=()=>$('big').style.display='none';
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  installPrompt=event;
+  $('installBanner').hidden=false;
+});
+$('installApp').onclick=async()=>{
+  if(!installPrompt)return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt=null;
+  $('installBanner').hidden=true;
+};
+window.addEventListener('appinstalled',()=>{$('installBanner').hidden=true;});
+function updateConnectionStatus(){
+  const status=$('connectionStatus');
+  status.hidden=navigator.onLine;
+  status.classList.toggle('offline',!navigator.onLine);
+  status.textContent=navigator.onLine?'':'Sin conexión: tus datos locales siguen disponibles';
+}
+window.addEventListener('online',updateConnectionStatus);
+window.addEventListener('offline',updateConnectionStatus);
+updateConnectionStatus();
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(error=>{
+    console.error('No se pudo activar el modo sin conexión:',error);
+  }));
+}
 (async()=>{try{db=await open();subjects=await all('subjects');
   if(!subjects.length){for(const s of DEFAULTS)await put('subjects',s);}
   else{for(const s of subjects){if(!s.color){s.color=COLORS[subjects.indexOf(s)%COLORS.length];await put('subjects',s);}}}

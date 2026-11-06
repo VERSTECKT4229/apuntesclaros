@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#23304a">
+<meta name="description" content="Organiza tus apuntes, fotografías y notas de estudio.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>ApuntesClaros</title>
 <link rel="stylesheet" href="styles.css"></head><body>
 <main><div class="top"><h1>ApuntesClaros</h1>
 <nav><button id="nHome">Inicio</button><button id="nUp" class="main">+ Subir fotos</button><button id="nSub">Materias</button></nav></div>
 <div id="v"></div></main>
 <div id="big"><img alt=""></div><div id="print"></div>
+<div id="connectionStatus" class="connection-status" hidden></div>
+<div id="installBanner" class="install-banner" hidden>
+  <span>Instala ApuntesClaros en tu dispositivo</span>
+  <button id="installApp" class="main" type="button">Instalar</button>
+</div>
 <script src="app.js"></script></body></html>
