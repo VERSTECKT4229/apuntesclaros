@@ -67,6 +67,7 @@ input[type=search],textarea,input[type=file]{width:min(100%,520px)}
   .top nav{width:100%}
   .top nav button{flex:1}
   .cards,.grid{grid-template-columns:1fr}
+  .dashboard{grid-template-columns:repeat(2,1fr)}
   .panel .row{align-items:stretch}
   .panel .row>*{max-width:100%}
   .tabs{width:100%;overflow-x:auto}
@@ -117,4 +118,10 @@ input[type=search],textarea,input[type=file]{width:min(100%,520px)}
   box-shadow:0 16px 40px rgba(35,48,74,.2);
 }
 .install-banner[hidden]{display:none}
+.dashboard{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:14px;margin:18px 0}
+.stat-card{display:flex;flex-direction:column;gap:4px;min-height:112px;padding:16px;border:1px solid rgba(35,48,74,.12);border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.stat-card strong{font-family:Georgia,serif;font-size:30px;color:var(--accent)}
+.stat-card b{font-size:15px}
+.subject-progress{height:7px;margin-top:10px;border-radius:999px;background:rgba(35,48,74,.12);overflow:hidden}
+.subject-progress span{display:block;height:100%;background:var(--c)}
 .install-banner span{font-weight:bold}

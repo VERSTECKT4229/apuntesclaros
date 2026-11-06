@@ -91,11 +91,17 @@ function render(){const v=$('v');v.innerHTML='';({home,subject,upload,subjects:s
 
 function home(v){
   const p=pendingBySubject(photos),n=Object.values(p).reduce((a,b)=>a+b,0);
+  const reviewed=photos.filter(photo=>photo.reviewed).length;
+  const progress=photos.length?Math.round(reviewed/photos.length*100):0;
+  const dashboard=el('div','dashboard');
+  dashboard.append(statCard(photos.length,'Apuntes','fotografías guardadas'),statCard(reviewed,'Revisados','apuntes completados'),statCard(progress+'%','Progreso','revisión general'),statCard(subjects.length,'Materias','organizadas'));
+  v.appendChild(dashboard);
   const b=el('div','sheet');b.innerHTML=n?'<b>Te faltan '+n+' fotos por revisar</b><br>'+Object.entries(p).map(([k,x])=>k+': '+x).join('  ·  '):'<b>Todo al día</b><br>No tienes fotos pendientes.';v.appendChild(b);
   v.appendChild(el('h2',0,'Mis materias'));
   const g=el('div','cards');
-  subjects.forEach(s=>{const c=el('div','nb');c.style.setProperty('--c',s.color);const tot=photos.filter(x=>x.subject===s.name).length;
-    c.append(el('b',0,s.name),el('div','mu',tot+' fotos'),el('span','pill',(p[s.name]||0)+' sin revisar'));c.onclick=()=>go('subject',s.name);g.appendChild(c);});
+  subjects.forEach(s=>{const c=el('div','nb');c.style.setProperty('--c',s.color);const subjectPhotos=photos.filter(x=>x.subject===s.name);const tot=subjectPhotos.length;const reviewed=subjectPhotos.filter(x=>x.reviewed).length;const percent=tot?Math.round(reviewed/tot*100):0;
+    const progress=el('div','subject-progress');progress.appendChild(el('span'));progress.firstChild.style.width=percent+'%';
+    c.append(el('b',0,s.name),el('div','mu',tot+' fotos · '+percent+'% revisado'),el('span','pill',(p[s.name]||0)+' sin revisar'),progress);c.onclick=()=>go('subject',s.name);g.appendChild(c);});
   const o=photos.filter(x=>x.subject===NONE).length;
   if(o){const c=el('div','nb');c.style.setProperty('--c','#cfcfcf');c.append(el('b',0,NONE),el('div','mu',o+' fotos'));c.onclick=()=>go('subject',NONE);g.appendChild(c);}
   v.appendChild(g);
@@ -120,6 +126,11 @@ function home(v){
     await refresh();
   };
   row.append(ex,im);bk.append(row,msg);v.appendChild(bk);
+}
+function statCard(value,title,caption){
+  const card=el('div','stat-card');
+  card.append(el('strong',0,value),el('b',0,title),el('span','mu',caption));
+  return card;
 }
 function subject(v){
   const name=S.subj,col=colorOf(name);
@@ -293,12 +304,27 @@ function card(p,i,col){
   const cs=el('select');[1,2,3].forEach(c=>{const x=el('option',0,'C'+c);x.value=c;if(c===corteOf(p))x.selected=true;cs.appendChild(x);});
   cs.onchange=async()=>{p.corte=+cs.value;await put('photos',p);refresh();};
   const rv=el('button',0,p.reviewed?'Pendiente':'Revisada');rv.onclick=async()=>{p.reviewed=!p.reviewed;await put('photos',p);refresh();};
+  const rotate=el('button',0,'Girar');rotate.onclick=()=>rotatePhoto(p);
   const x=el('button',0,'Borrar');x.onclick=async()=>{if(confirm('\u00bfBorrar esta foto?')){await del('photos',p.id);refresh();}};
-  row.append(sel,cs,rv,x);d.append(im,t,m,row);return d;
+  row.append(sel,cs,rv,rotate,x);d.append(im,t,m,row);return d;
+}
+function rotatePhoto(photo){
+  const image=new Image();
+  image.onload=async()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=image.height;canvas.height=image.width;
+    const context=canvas.getContext('2d');
+    context.translate(canvas.width,0);context.rotate(Math.PI/2);
+    context.drawImage(image,0,0);
+    photo.dataUrl=canvas.toDataURL('image/jpeg',.88);
+    await put('photos',photo);refresh();
+  };
+  image.src=photo.dataUrl;
 }
 function upload(v){
   v.append(el('h2',0,'Subir fotos'));const p=el('div','panel');
-  p.innerHTML='<div class="row"><input type="file" id="f" accept="image/*" multiple></div><div class="row"><input id="n" size="30" placeholder="Nota (ej: integrales dobles, clase 12)"></div><div class="row"><select id="s"></select><select id="c"><option value="1">Corte 1</option><option value="2">Corte 2</option><option value="3">Corte 3</option></select><button class="main" id="go">Guardar</button></div><div class="msg" id="m"></div>';
+  p.innerHTML='<div class="row"><input type="file" id="f" accept="image/*" capture="environment" multiple><button id="camera" type="button">Abrir cámara</button></div><div class="row"><input id="n" size="30" placeholder="Nota (ej: integrales dobles, clase 12)"></div><div class="row"><select id="s"></select><select id="c"><option value="1">Corte 1</option><option value="2">Corte 2</option><option value="3">Corte 3</option></select><button class="main" id="go">Guardar</button></div><div class="msg" id="m"></div>';
+  $('camera').onclick=()=>{$('f').click();};
   v.appendChild(p);const s=$('s');
   [['auto','Detectar materia automáticamente'],...subjects.map(x=>[x.name,x.name])].forEach(([a,b])=>{const o=el('option',0,b);o.value=a;s.appendChild(o);});
   if(S.subj&&subjects.some(x=>x.name===S.subj))s.value=S.subj;
