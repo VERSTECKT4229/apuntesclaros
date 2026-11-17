@@ -4,6 +4,12 @@
 
 Se completó una versión funcional, instalable y preparada para demostración.
 
+## Enlaces de entrega
+
+- Repositorio: https://github.com/VERSTECKT4229/apuntesclaros
+- Demostración oficial: https://versteckt4229.github.io/apuntesclaros/
+- Demostración temporal: https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
+
 ## Nuevas mejoras incorporadas
 
 - Tablero general con total de apuntes, apuntes revisados, progreso y materias.

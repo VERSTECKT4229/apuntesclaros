@@ -20,7 +20,15 @@ Abre la carpeta en Visual Studio Code y ejecuta `index.html` con Live Server.
 
 ## Demo para compartir
 
-Abre esta dirección para probar la aplicación desde el navegador:
+Repositorio público:
+
+https://github.com/VERSTECKT4229/apuntesclaros
+
+Sitio publicado mediante GitHub Pages:
+
+https://versteckt4229.github.io/apuntesclaros/
+
+Mientras GitHub Pages activa el primer despliegue, también puede usarse esta demostración temporal:
 
 https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
 

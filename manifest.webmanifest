@@ -4,6 +4,7 @@
   "description": "Organiza apuntes, fotografías y notas por materia.",
   "start_url": "./",
   "scope": "./",
+  "id": "./",
   "display": "standalone",
   "background_color": "#f7f3e8",
   "theme_color": "#23304a",
