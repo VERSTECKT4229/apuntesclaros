@@ -41,6 +41,12 @@ Al abrirla, haz clic en **Open the page** si aparece el aviso de seguridad de ra
 - También puedes usar el menú del navegador para **Instalar aplicación**.
 - Los archivos principales se guardan en caché para continuar usándola sin conexión.
 
+## Activar GitHub Pages
+
+Abre [Configuración de Pages](https://github.com/VERSTECKT4229/apuntesclaros/settings/pages), selecciona **GitHub Actions** como fuente y guarda. El flujo `Publicar sitio` desplegará la aplicación en:
+
+https://versteckt4229.github.io/apuntesclaros/
+
 ## Publicar en GitHub
 
 ```bash

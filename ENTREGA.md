@@ -10,6 +10,8 @@ Se completó una versión funcional, instalable y preparada para demostración.
 - Demostración oficial: https://versteckt4229.github.io/apuntesclaros/
 - Demostración temporal: https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
 
+Antes de compartir la demostración oficial, el propietario del repositorio debe abrir [Configuración de Pages](https://github.com/VERSTECKT4229/apuntesclaros/settings/pages) y seleccionar **GitHub Actions** como fuente.
+
 ## Nuevas mejoras incorporadas
 
 - Tablero general con total de apuntes, apuntes revisados, progreso y materias.
