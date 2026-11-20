@@ -53,9 +53,6 @@ button.on{border-color:#b34b3f;background:#b34b3f;color:white}
 .nb:hover{transform:translateY(-4px)}
 .sheet{max-width:none;border-left:5px solid #df735f;border-radius:8px;box-shadow:var(--shadow);transform:none}
 .panel{border:1px solid rgba(35,48,74,.18);border-radius:12px;box-shadow:var(--shadow)}
-.voice-panel{background:linear-gradient(135deg,var(--card),rgba(223,115,95,.08))}
-.voice-panel textarea{resize:vertical;border-radius:8px}
-.voice-panel b{font-size:18px}
 .msg{align-self:center}
 .grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 .ph{border-radius:4px}

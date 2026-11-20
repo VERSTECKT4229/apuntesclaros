@@ -4,10 +4,10 @@ Los resultados son parciales cuando no se cubrió cada paso del caso. Ninguno se
 
 ## PF-01 — Flujo de nota, texto, imagen y voz
 
-- **Propósito:** verificar alta/consulta/edición de una nota de texto con imagen, dictado en vivo, grabación, reproducción y eliminación del audio asociado.
+- **Propósito:** verificar alta/consulta/edición de una nota de texto con imagen, dictado en vivo dentro de la nota, grabación, reproducción y eliminación del audio asociado; confirmar que el dictado no aparece en Materias.
 - **Precondiciones:** Chrome o Edge actualizado; sitio servido en `localhost` o HTTPS; IndexedDB disponible; permiso de micrófono y dispositivo de audio funcional.
 - **Pasos:** abrir Notas; crear título, texto y etiqueta; seleccionar una imagen y pegar otra; dictar una frase en español; iniciar/detener grabación; guardar; reproducir; recargar; editar la nota y quitar una grabación; guardar.
-- **Esperado:** la búsqueda/filtro encuentra la nota; imágenes comprimidas y audio quedan asociados; el estado del dictado indica “Escuchando…”; el audio se reproduce tras recargar; edición se persiste.
+- **Esperado:** la búsqueda/filtro encuentra la nota; imágenes comprimidas y audio quedan asociados; el dictado agrega texto al contenido solo dentro de la nota; el audio se reproduce tras recargar y muestra que no se transcribe; edición se persiste.
 - **Obtenido:** En navegador integrado se creó, consultó, editó, recargó y eliminó una nota de texto; se seleccionó una imagen y se simuló el evento `paste` con archivo de imagen. Dictado y grabación física no se ejecutaron.
 - **Estado:** Parcial.
 - **Evidencia:** ejecución interactiva en `file://`; rutas implementadas en `app.js`. Falta validar micrófono, MediaRecorder y persistencia de un audio real.

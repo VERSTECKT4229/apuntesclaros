@@ -8,7 +8,7 @@ Aplicación web en español para organizar apuntes de estudio con notas de texto
 
 Abre la demo HTTPS y envía este enlace a quien vaya a probarla:
 
-**https://raw.githack.com/VERSTECKT4229/apuntesclaros/be3f1222ee2844a656cd728c737a51eb0c6c1f48/index.html**
+**https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html**
 
 Si aparece el aviso de raw.githack, pulsa **Open the page**. Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar voz, concede permiso de micrófono en Chrome o Edge. El dictado depende del navegador y puede usar el servicio de voz de su proveedor.
 
@@ -19,7 +19,7 @@ La URL oficial de GitHub Pages es https://versteckt4229.github.io/apuntesclaros/
 - CRUD de notas: crear, consultar, editar y eliminar.
 - Búsqueda por título, etiqueta/categoría y contenido; filtro por etiqueta.
 - Adjuntar imágenes seleccionadas o pegadas desde el portapapeles. Se valida el tipo y la decodificación, y se comprime antes de guardarlas.
-- Dictado en español (`es-CO`) cuando el navegador ofrece Web Speech API.
+- Dictado en español (`es-CO`) dentro de las notas cuando el navegador ofrece Web Speech API; no hay dictado en las pantallas de materias.
 - Grabación con MediaRecorder, reproducción y eliminación de archivos asociados a notas.
 - Carga no destructiva de tres notas de prueba.
 - Aplicación instalable (PWA) y recursos estáticos almacenables en caché para uso sin conexión.
@@ -46,12 +46,12 @@ Abre `index.html` directamente para revisar la interfaz, o usa **Live Server** e
 ## Uso
 
 1. En **Notas**, crea una nota con título y contenido o al menos una imagen; añade una etiqueta opcional.
-2. Selecciona imágenes o pega una captura con `Ctrl+V`. Usa **Dictar** para incorporar texto reconocido en vivo, si está disponible.
-3. Usa **Iniciar grabación** y **Detener grabación** para adjuntar audio. Guarda la nota para persistir la grabación. Cada archivo se puede reproducir o eliminar desde la edición de la nota.
+2. Selecciona imágenes o pega una captura con `Ctrl+V`. En el contenido de la nota, usa **Dictar** para incorporar texto reconocido en vivo, si está disponible.
+3. Usa **Iniciar grabación** y **Detener grabación** para adjuntar audio. Guarda la nota para persistir la grabación. Cada archivo se puede reproducir o eliminar desde la edición de la nota; las grabaciones no se transcriben.
 4. Busca por título, etiqueta o contenido; abre una nota para editarla o eliminarla.
 5. Pulsa **Cargar datos de prueba** para agregar tres notas identificadas como pruebas. La acción no elimina ni reemplaza datos existentes, y volver a pulsarla no duplica las muestras.
 
-El botón **Transcribir** explica que la API de dictado en vivo no transcribe un Blob grabado. La transcripción de archivos grabados queda pendiente: integrar un modelo local verificable requeriría decidir y distribuir/descargar pesos de modelo (por ejemplo, un modelo Whisper pequeño ronda decenas de MB, además del runtime y memoria de trabajo). No se simula la transcripción ni se sube el audio.
+El dictado solo transcribe voz en vivo en el contenido de una nota. No se ofrece transcripción automática de grabaciones: Web Speech API no procesa un Blob ya grabado. Integrar un modelo local verificable requeriría decidir y distribuir/descargar pesos de modelo (por ejemplo, un modelo Whisper pequeño ronda decenas de MB, además del runtime y memoria de trabajo). No se simula la transcripción ni se sube el audio.
 
 ## Almacenamiento y limitaciones
 
