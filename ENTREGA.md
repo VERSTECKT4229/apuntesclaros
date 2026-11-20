@@ -1,51 +1,23 @@
-# ApuntesClaros: resumen del progreso
+# ApuntesClaros: entrega y estado de validación
 
-## Estado general
+## Enlaces
 
-Se completó una versión funcional, instalable y preparada para demostración.
+- Repositorio público: https://github.com/VERSTECKT4229/apuntesclaros
+- Demo HTTPS para compartir: https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
+- GitHub Pages: https://versteckt4229.github.io/apuntesclaros/ (requiere habilitar Pages con **GitHub Actions** en Settings → Pages).
 
-## Enlaces de entrega
+## Alcance implementado
 
-- Repositorio: https://github.com/VERSTECKT4229/apuntesclaros
-- Demostración oficial: https://versteckt4229.github.io/apuntesclaros/
-- Demostración temporal: https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html
+- Notas de texto con etiquetas, CRUD, búsqueda y filtros.
+- Imágenes seleccionadas o pegadas, validadas y comprimidas con Canvas.
+- Dictado en español cuando Web Speech API está disponible.
+- Grabación MediaRecorder y persistencia local en IndexedDB.
+- Tres notas de prueba, cargadas sin reemplazar datos existentes.
 
-Antes de compartir la demostración oficial, el propietario del repositorio debe abrir [Configuración de Pages](https://github.com/VERSTECKT4229/apuntesclaros/settings/pages) y seleccionar **GitHub Actions** como fuente.
+## Estado y limitaciones
 
-## Nuevas mejoras incorporadas
-
-- Tablero general con total de apuntes, apuntes revisados, progreso y materias.
-- Barra visual de progreso por materia en las tarjetas principales.
-- Captura de fotografías desde la cámara del celular.
-- Carga múltiple de imágenes.
-- Compresión automática de fotografías.
-- Botón para girar apuntes desde la vista principal.
-- Clasificación automática por materia.
-- Organización por materia y tres cortes académicos.
-- Notas de voz mediante Web Speech API.
-- Texto editable antes de guardar una nota.
-- Respaldo completo exportable e importable.
-- Recuperación de datos dañados por codificación anterior.
-- Resumen e impresión para generar PDF.
-- Diseño responsive para escritorio, tabletas y celulares.
-- Modo claro y modo oscuro.
-- Aplicación instalable como PWA.
-- Funcionamiento sin conexión mediante caché.
-- Indicador de estado de conexión.
-- Icono personalizado y página preparada para GitHub Pages.
-
-## Funciones validadas
-
-- Apertura de la aplicación.
-- Creación de materias.
-- Carga, clasificación, edición y eliminación de fotografías.
-- Marcado de apuntes como revisados.
-- Guardado local mediante IndexedDB.
-- Exportación e importación de respaldos.
-- Generación del paquete de impresión/PDF.
-- Instalación como aplicación web.
-- Uso principal sin conexión.
-
-## Nota técnica
-
-La sincronización automática entre dispositivos requiere una infraestructura de cuentas, autenticación, base de datos remota y reglas de seguridad. Para compartir datos entre dispositivos sin esa infraestructura se mantiene disponible la exportación/importación de respaldos completa.
+- Las notas e imágenes se conservan en el navegador de cada persona; no se sincronizan entre usuarios.
+- Web Speech API puede depender de un servicio del navegador. La aplicación no sube notas, imágenes ni audios a un servidor propio.
+- La transcripción de archivos de audio grabados está pendiente de elegir e integrar un modelo local. El botón informa la limitación; no inventa transcripciones.
+- Los casos PF-01 a PF-04 y sus resultados parciales o pendientes están en [`docs/casos_de_prueba.md`](./docs/casos_de_prueba.md). Las pruebas de micrófono, grabación real, permisos y cuota requieren dispositivos y navegador reales.
+- El despliegue de Pages falló porque el sitio aún no está habilitado para Actions. El log indica que el token del workflow no tiene permiso para crear el sitio; el propietario debe seleccionarlo en Settings → Pages.

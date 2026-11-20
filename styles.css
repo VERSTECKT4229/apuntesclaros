@@ -104,6 +104,7 @@ input[type=search],textarea,input[type=file]{width:min(100%,520px)}
   background:#23304a;
   color:#fff;
   box-shadow:0 8px 24px rgba(35,48,74,.25);
+  pointer-events:none;
 }
 .connection-status.offline{background:#b34b3f}
 .install-banner{
@@ -125,3 +126,9 @@ input[type=search],textarea,input[type=file]{width:min(100%,520px)}
 .subject-progress{height:7px;margin-top:10px;border-radius:999px;background:rgba(35,48,74,.12);overflow:hidden}
 .subject-progress span{display:block;height:100%;background:var(--c)}
 .install-banner span{font-weight:bold}
+label{display:block;font-weight:bold;margin:10px 0 4px}
+.panel>input,.panel>textarea{display:block;width:min(100%,700px);margin-bottom:10px}
+.panel audio{display:block;width:min(100%,420px);margin:8px 0}
+.panel article{min-width:0}
+.nb article,.nb p{overflow-wrap:anywhere}
+.nb .row{margin-top:12px}

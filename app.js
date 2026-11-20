@@ -42,16 +42,21 @@ const DEFAULTS=[{name:'Cálculo III',keywords:['integral','gradiente','derivada 
 {name:'Sistemas y ensambladores',keywords:['circuito','logisim','acarreo','binario','ensamblador'],color:COLORS[1]},
 {name:'Prácticas ágiles',keywords:['scrum','sprint','backlog','historia de usuario','agil'],color:COLORS[2]},
 {name:'Programación',keywords:['codigo','python','java','funcion','algoritmo'],color:COLORS[3]}];
-let db,subjects=[],photos=[],S={view:'home',subj:null,corte:'Todos'};
+let db,subjects=[],photos=[],notes=[],mediaUrls=[],S={view:'home',subj:null,corte:'Todos',editNoteId:null};
 const $=id=>document.getElementById(id);
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
-function open(){return new Promise((a,b)=>{const r=indexedDB.open('apuntesclaros',1);r.onupgradeneeded=()=>{r.result.createObjectStore('photos',{keyPath:'id'});r.result.createObjectStore('subjects',{keyPath:'name'});};r.onsuccess=()=>a(r.result);r.onerror=()=>b(r.error);});}
+function open(){return new Promise((a,b)=>{const r=indexedDB.open('apuntesclaros',2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('photos'))d.createObjectStore('photos',{keyPath:'id'});if(!d.objectStoreNames.contains('subjects'))d.createObjectStore('subjects',{keyPath:'name'});if(!d.objectStoreNames.contains('notes'))d.createObjectStore('notes',{keyPath:'id'});if(!d.objectStoreNames.contains('audio')){const audio=d.createObjectStore('audio',{keyPath:'id'});audio.createIndex('noteId','noteId',{unique:false});}};r.onsuccess=()=>a(r.result);r.onerror=()=>b(r.error);r.onblocked=()=>b(new Error('Cierra otras pestañas de ApuntesClaros para actualizar el almacenamiento.'));});}
 const tx=(st,m,f)=>new Promise((a,b)=>{const q=f(db.transaction(st,m).objectStore(st));q.onsuccess=()=>a(q.result);q.onerror=()=>b(q.error);});
 const all=s=>tx(s,'readonly',o=>o.getAll()),put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k));
 const colorOf=n=>(subjects.find(s=>s.name===n)||{}).color||'#cfcfcf';
 const corteOf=p=>p.corte||1;
-function shrink(f){return new Promise((a,b)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);a(c.toDataURL('image/jpeg',.8));};i.onerror=()=>{URL.revokeObjectURL(u);b(new Error('No se pudo leer '+f.name));};i.src=u;});}
-async function refresh(){subjects=await all('subjects');photos=await all('photos');render();}
+function shrink(f){return new Promise((a,b)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{try{const k=Math.min(1,1280/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(i.width*k));c.height=Math.max(1,Math.round(i.height*k));const context=c.getContext('2d');if(!context)throw new Error('El navegador no pudo preparar la imagen.');context.drawImage(i,0,0,c.width,c.height);a(c.toDataURL('image/jpeg',.8));}catch(e){b(e);}finally{URL.revokeObjectURL(u);}};i.onerror=()=>{URL.revokeObjectURL(u);b(new Error('No se pudo decodificar la imagen '+f.name));};i.src=u;});}
+async function refresh(){subjects=await all('subjects');photos=await all('photos');notes=await all('notes');render();}
+function storageError(error){
+  if(error&&error.name==='QuotaExceededError')return 'Se agotó el espacio local del navegador. Libera espacio o elimina archivos e inténtalo de nuevo.';
+  return 'No se pudieron guardar los cambios localmente: '+((error&&error.message)||'error de almacenamiento');
+}
+function releaseMediaUrls(){mediaUrls.forEach(url=>URL.revokeObjectURL(url));mediaUrls=[];}
 
 function repairStoredText(text){
   return String(text||'')
@@ -87,7 +92,7 @@ async function repairStoredTexts(){
 }
 function go(v,subj){S.view=v;if(subj!==undefined)S.subj=subj;S.corte='Todos';render();}
 
-function render(){const v=$('v');v.innerHTML='';({home,subject,upload,subjects:subjectsView,summary}[S.view]||home)(v);}
+function render(){releaseMediaUrls();const v=$('v');v.onpaste=null;v.innerHTML='';({home,subject,upload,subjects:subjectsView,summary,notes:notesView,noteForm:noteForm}[S.view]||home)(v);}
 
 function home(v){
   const p=pendingBySubject(photos),n=Object.values(p).reduce((a,b)=>a+b,0);
@@ -97,6 +102,7 @@ function home(v){
   dashboard.append(statCard(photos.length,'Apuntes','fotografías guardadas'),statCard(reviewed,'Revisados','apuntes completados'),statCard(progress+'%','Progreso','revisión general'),statCard(subjects.length,'Materias','organizadas'));
   v.appendChild(dashboard);
   const b=el('div','sheet');b.innerHTML=n?'<b>Te faltan '+n+' fotos por revisar</b><br>'+Object.entries(p).map(([k,x])=>k+': '+x).join('  ·  '):'<b>Todo al día</b><br>No tienes fotos pendientes.';v.appendChild(b);
+  const notesLink=el('button','main','Abrir notas ('+notes.length+')');notesLink.onclick=()=>go('notes');v.appendChild(notesLink);
   v.appendChild(el('h2',0,'Mis materias'));
   const g=el('div','cards');
   subjects.forEach(s=>{const c=el('div','nb');c.style.setProperty('--c',s.color);const subjectPhotos=photos.filter(x=>x.subject===s.name);const tot=subjectPhotos.length;const reviewed=subjectPhotos.filter(x=>x.reviewed).length;const percent=tot?Math.round(reviewed/tot*100):0;
@@ -105,6 +111,7 @@ function home(v){
   const o=photos.filter(x=>x.subject===NONE).length;
   if(o){const c=el('div','nb');c.style.setProperty('--c','#cfcfcf');c.append(el('b',0,NONE),el('div','mu',o+' fotos'));c.onclick=()=>go('subject',NONE);g.appendChild(c);}
   v.appendChild(g);
+  const sampleButton=el('button',0,'Cargar datos de prueba');sampleButton.onclick=loadSampleNotes;v.appendChild(sampleButton);
   v.appendChild(el('h2',0,'Respaldo'));
   const bk=el('div','panel'),msg=el('div','msg mu','');
   bk.appendChild(el('div','mu','Guarda un archivo con todas tus fotos, materias y notas, y cárgalo cuando quieras recuperarlas.'));
@@ -126,6 +133,216 @@ function home(v){
     await refresh();
   };
   row.append(ex,im);bk.append(row,msg);v.appendChild(bk);
+}
+const uid=()=>Date.now()+'-'+Math.random().toString(36).slice(2,9);
+const get=(store,key)=>tx(store,'readonly',objectStore=>objectStore.get(key));
+function saveNoteAndAudio(note,audioToSave,removedAudioIds){
+  return new Promise((resolve,reject)=>{
+    let transaction;
+    try{
+      transaction=db.transaction(['notes','audio'],'readwrite');
+      transaction.objectStore('notes').put(note);
+      removedAudioIds.forEach(id=>transaction.objectStore('audio').delete(id));
+      audioToSave.forEach(clip=>transaction.objectStore('audio').put(clip));
+      transaction.oncomplete=()=>resolve();
+      transaction.onerror=()=>reject(transaction.error);
+      transaction.onabort=()=>reject(transaction.error||new Error('La transacción local fue cancelada.'));
+    }catch(error){if(transaction)transaction.abort();reject(error);}
+  });
+}
+function deleteNoteAndAudio(noteId){
+  return new Promise((resolve,reject)=>{
+    let transaction;
+    try{
+      transaction=db.transaction(['notes','audio'],'readwrite');
+      transaction.objectStore('notes').delete(noteId);
+      const request=transaction.objectStore('audio').index('noteId').openCursor(noteId);
+      request.onsuccess=()=>{const cursor=request.result;if(cursor){cursor.delete();cursor.continue();}};
+      transaction.oncomplete=()=>resolve();
+      transaction.onerror=()=>reject(transaction.error);
+      transaction.onabort=()=>reject(transaction.error||new Error('La transacción local fue cancelada.'));
+    }catch(error){if(transaction)transaction.abort();reject(error);}
+  });
+}
+function notesView(v){
+  v.append(el('h2',0,'Mis notas'));
+  v.append(el('p','mu','Notas, imágenes y grabaciones se guardan en este navegador.'));
+  const top=el('div','row'),add=el('button','main','+ Nueva nota'),samples=el('button',0,'Cargar datos de prueba');
+  add.onclick=()=>{S.editNoteId=null;go('noteForm');};
+  samples.onclick=loadSampleNotes;
+  top.append(add,samples);v.appendChild(top);
+  const controls=el('div','row'),search=el('input'),filter=el('select');
+  search.type='search';search.placeholder='Buscar título, etiqueta o contenido';
+  const allTags=el('option',0,'Todas las etiquetas');allTags.value='';filter.appendChild(allTags);
+  [...new Set(notes.map(note=>note.tag).filter(Boolean))].sort().forEach(tag=>{const option=el('option',0,tag);option.value=tag;filter.appendChild(option);});
+  controls.append(search,filter);v.appendChild(controls);
+  const status=el('p','msg mu',''),list=el('div','cards');v.append(status,list);
+  function draw(){
+    const query=norm(search.value.trim()),tag=filter.value;
+    const matches=notes.filter(note=>(!query||norm([note.title,note.tag,note.content].join(' ')).includes(query))&&(!tag||note.tag===tag))
+      .slice().sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+    list.innerHTML='';
+    if(!matches.length){list.appendChild(el('p','mu',notes.length?'No hay notas que coincidan.':'Aún no hay notas. Crea una o carga datos de prueba.'));return;}
+    matches.forEach(note=>{
+      const card=el('article','nb');card.style.setProperty('--c','#df735f');
+      card.append(el('b',0,note.title),el('div','pill',note.tag||'Sin etiqueta'));
+      if(note.content)card.appendChild(el('p','mu',note.content.length>150?note.content.slice(0,147)+'...':note.content));
+      const details=el('div','mu',(note.images||[]).length+' imagen(es) · '+(note.audioIds||[]).length+' grabación(es)');
+      card.appendChild(details);
+      if(note.images&&note.images[0]){const image=el('img');image.src=note.images[0].dataUrl;image.alt=note.images[0].name||note.title;image.style.cssText='max-width:100%;max-height:140px;object-fit:cover;margin-top:8px';card.appendChild(image);}
+      const actions=el('div','row'),edit=el('button',0,'Editar'),remove=el('button',0,'Borrar');
+      edit.onclick=()=>{S.editNoteId=note.id;go('noteForm');};
+      remove.onclick=async()=>{if(!confirm('¿Borrar la nota y sus grabaciones asociadas?'))return;try{await deleteNoteAndAudio(note.id);await refresh();}catch(error){status.textContent=storageError(error);}};
+      actions.append(edit,remove);card.appendChild(actions);list.appendChild(card);
+    });
+  }
+  search.oninput=draw;filter.onchange=draw;draw();
+}
+function noteForm(v){
+  const current=notes.find(note=>note.id===S.editNoteId);
+  const note=current||{id:uid(),title:'',tag:'',content:'',images:[],audioIds:[]};
+  const images=(note.images||[]).slice(),newAudio=[],removedAudioIds=new Set();
+  v.append(el('h2',0,current?'Editar nota':'Nueva nota'));
+  const panel=el('section','panel'),title=el('input'),tag=el('input'),content=el('textarea');
+  title.id='noteTitle';tag.id='noteTag';content.id='noteContent';
+  title.placeholder='Título';title.maxLength=160;title.value=note.title;
+  tag.placeholder='Etiqueta o categoría';tag.maxLength=60;tag.value=note.tag||'';
+  content.placeholder='Escribe o dicta el contenido de la nota';content.rows=6;content.style.width='100%';content.value=note.content||'';
+  const titleLabel=el('label',0,'Título'),tagLabel=el('label',0,'Etiqueta o categoría'),contentLabel=el('label',0,'Contenido');
+  titleLabel.htmlFor=title.id;tagLabel.htmlFor=tag.id;contentLabel.htmlFor=content.id;
+  panel.append(titleLabel,title,tagLabel,tag,contentLabel,content);
+  const feedback=el('div','msg mu','');panel.appendChild(feedback);
+  const dictation=el('div','row'),dictate=el('button','main','Dictar'),dictationStatus=el('span','mu','');
+  const privacyNotice=el('p','mu','El procesamiento de voz depende del navegador y puede usar un servicio de su proveedor.');
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  let recognition=null,dictationBase='',dictationFinal='';
+  if(!SpeechRecognition)dictationStatus.textContent='Dictado no disponible en este navegador.';
+  dictate.onclick=()=>{
+    if(!SpeechRecognition){dictationStatus.textContent='Prueba Chrome o Edge con permiso de micrófono.';return;}
+    if(recognition){recognition.stop();recognition=null;dictate.textContent='Dictar';dictationStatus.textContent='Dictado detenido.';return;}
+    try{
+      recognition=new SpeechRecognition();recognition.lang='es-CO';recognition.interimResults=true;recognition.continuous=true;
+      dictationBase=content.value.trim();dictationFinal='';
+      recognition.onresult=event=>{
+        let interim='';
+        for(let i=event.resultIndex;i<event.results.length;i++){
+          const text=event.results[i][0].transcript.trim();
+          if(event.results[i].isFinal)dictationFinal+=(dictationFinal?' ':'')+text;
+          else interim+=(interim?' ':'')+text;
+        }
+        content.value=(dictationBase+' '+dictationFinal+' '+interim).trim();
+      };
+      recognition.onerror=event=>{dictationStatus.textContent=DICT_ERR[event.error]||'No se pudo usar el dictado: '+event.error;};
+      recognition.onend=()=>{recognition=null;dictate.textContent='Dictar';if(dictationStatus.textContent==='Escuchando…')dictationStatus.textContent='Dictado detenido.';};
+      recognition.start();dictate.textContent='Detener dictado';dictationStatus.textContent='Escuchando…';
+    }catch(error){recognition=null;dictationStatus.textContent=DICT_ERR[error.name]||'No se pudo activar el micrófono: '+(error.message||error.name);}
+  };
+  dictation.append(dictate,dictationStatus);panel.append(dictation,privacyNotice);
+  const file=el('input');file.type='file';file.accept='image/*';file.multiple=true;
+  const pasteInfo=el('p','mu','También puedes pegar capturas con Ctrl+V dentro de este formulario.');
+  const imageList=el('div','row');
+  function drawImages(){
+    imageList.innerHTML='';
+    images.forEach((image,index)=>{
+      const wrap=el('div','panel'),preview=el('img');preview.src=image.dataUrl;preview.alt=image.name||'Imagen adjunta';preview.style.cssText='display:block;max-width:180px;max-height:140px;object-fit:contain';
+      const remove=el('button',0,'Quitar imagen');remove.onclick=()=>{images.splice(index,1);drawImages();};
+      wrap.append(preview,el('span','mu',image.name||'Imagen'),remove);imageList.appendChild(wrap);
+    });
+  }
+  async function addImageFiles(files){
+    for(const imageFile of files){
+      const error=validateFile(imageFile);
+      if(error){feedback.textContent=error;continue;}
+      try{const dataUrl=await shrink(imageFile);images.push({name:imageFile.name,dataUrl});feedback.textContent='Imagen validada y comprimida.';}
+      catch(error){feedback.textContent='Imagen rechazada: '+error.message;}
+    }
+    drawImages();
+  }
+  file.onchange=()=>{addImageFiles(Array.from(file.files||[]));file.value='';};
+  panel.append(el('label',0,'Imágenes adjuntas'),file,pasteInfo,imageList);drawImages();
+  const audioHeading=el('h3',0,'Grabaciones de audio');
+  const audioControls=el('div','row'),record=el('button','main','Iniciar grabación'),audioList=el('div','row');
+  let recorder=null,stream=null,chunks=[];
+  function renderAudio(clip,id,isNew){
+    const row=el('div','panel');
+    const label=el('span','mu',clip.name+' · '+(isNew?'Sin guardar':'Guardada localmente'));
+    const player=el('audio');player.controls=true;player.preload='none';
+    const url=URL.createObjectURL(clip.blob);mediaUrls.push(url);player.src=url;
+    const transcribe=el('button',0,'Transcribir'),remove=el('button',0,'Eliminar audio');
+    transcribe.onclick=()=>{feedback.textContent='Transcripción local no disponible: Web Speech API solo dicta audio en vivo y no transcribe un archivo grabado. El audio no se enviará a ningún servicio.';};
+    remove.onclick=()=>{if(isNew){const index=newAudio.indexOf(clip);if(index>=0)newAudio.splice(index,1);}else removedAudioIds.add(id);URL.revokeObjectURL(url);mediaUrls=mediaUrls.filter(item=>item!==url);row.remove();};
+    row.append(label,player,transcribe,remove);audioList.appendChild(row);
+  }
+  (async()=>{
+    for(const id of note.audioIds||[]){
+      if(removedAudioIds.has(id))continue;
+      try{const clip=await get('audio',id);if(clip&&audioList.isConnected)renderAudio(clip,id,false);}
+      catch(error){feedback.textContent='No se pudo cargar una grabación: '+(error.message||error);}
+    }
+  })();
+  record.onclick=async()=>{
+    if(recorder&&recorder.state==='recording'){recorder.stop();record.textContent='Iniciar grabación';return;}
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){feedback.textContent='Este navegador no admite grabación local. Prueba Chrome o Edge desde HTTPS o localhost.';return;}
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];
+      recorder=new MediaRecorder(stream);
+      recorder.ondataavailable=event=>{if(event.data&&event.data.size)chunks.push(event.data);};
+      recorder.onerror=event=>{feedback.textContent='Error al grabar audio: '+((event.error&&event.error.message)||'error del dispositivo');};
+      recorder.onstop=()=>{
+        stream.getTracks().forEach(track=>track.stop());stream=null;record.textContent='Iniciar grabación';
+        const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
+        if(blob.size){const clip={id:uid(),noteId:note.id,name:'grabacion-'+new Date().toISOString().replace(/[:.]/g,'-')+'.webm',type:blob.type,date:new Date().toISOString(),blob};newAudio.push(clip);renderAudio(clip,clip.id,true);feedback.textContent='Grabación lista. Pulsa “Guardar nota” para persistirla.';}
+        else feedback.textContent='La grabación quedó vacía; inténtalo de nuevo.';
+        recorder=null;
+      };
+      recorder.start();record.textContent='Detener grabación';feedback.textContent='Grabando audio…';
+    }catch(error){if(stream)stream.getTracks().forEach(track=>track.stop());stream=null;feedback.textContent=error.name==='NotAllowedError'?'Permiso de micrófono denegado. Habilítalo en el navegador e inténtalo de nuevo.':'No se pudo iniciar el micrófono: '+(error.message||error.name);}
+  };
+  audioControls.append(record);panel.append(audioHeading,audioControls,audioList);
+  const actions=el('div','row'),save=el('button','main','Guardar nota'),cancel=el('button',0,'Cancelar');
+  cancel.onclick=()=>go('notes');
+  save.onclick=async()=>{
+    const cleanTitle=title.value.trim(),cleanContent=content.value.trim();
+    if(!cleanTitle){feedback.textContent='Escribe un título antes de guardar.';title.focus();return;}
+    if(!cleanContent&&!images.length){feedback.textContent='Añade contenido o al menos una imagen antes de guardar.';content.focus();return;}
+    if(recorder&&recorder.state==='recording'){recorder.stop();feedback.textContent='Grabación detenida. Pulsa Guardar nota de nuevo cuando aparezca el archivo.';return;}
+    if(recognition){recognition.stop();recognition=null;}
+    const ids=(note.audioIds||[]).filter(id=>!removedAudioIds.has(id));
+    const clips=newAudio.map(clip=>({...clip,noteId:note.id}));
+    const saved={...note,title:cleanTitle,tag:tag.value.trim(),content:cleanContent,images,audioIds:[...ids,...clips.map(clip=>clip.id)],updatedAt:new Date().toISOString()};
+    if(!saved.createdAt)saved.createdAt=saved.updatedAt;
+    try{await saveNoteAndAudio(saved,clips,[...removedAudioIds]);S.view='notes';S.editNoteId=null;await refresh();}
+    catch(error){feedback.textContent=storageError(error);}
+  };
+  actions.append(save,cancel);panel.appendChild(actions);v.appendChild(panel);
+  v.onpaste=event=>{
+    const clipboard=event.clipboardData;
+    const pastedFiles=Array.from(clipboard&&clipboard.files||[]);
+    if(!pastedFiles.length&&clipboard)pastedFiles.push(...Array.from(clipboard.items||[]).filter(item=>item.kind==='file').map(item=>item.getAsFile()).filter(Boolean));
+    if(!pastedFiles.length)return;
+    event.preventDefault();addImageFiles(pastedFiles);
+  };
+}
+async function loadSampleNotes(){
+  const samples=[
+    {id:'sample-integrales',title:'Prueba · Integrales',tag:'Cálculo',content:'Ejemplo de nota local con imagen adjunta para verificar búsqueda y edición.',color:'#f4d35e'},
+    {id:'sample-ciclo-vida',title:'Prueba · Ciclo de vida',tag:'Programación',content:'Apunte de prueba para comprobar categorías, persistencia y eliminación.',color:'#9fd8b0'},
+    {id:'sample-diseno',title:'Prueba · Diseño de interfaz',tag:'Diseño',content:'Nota de muestra independiente; los datos existentes se conservan.',color:'#9cc9ea'}
+  ];
+  try{
+    const existingNotes=await all('notes');
+    for(const sample of samples){
+      if(existingNotes.some(note=>note.id===sample.id||(note.title===sample.title&&note.tag===sample.tag&&note.content===sample.content)))continue;
+      const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;
+      const context=canvas.getContext('2d');if(!context)throw new Error('No se pudo generar la imagen de prueba.');
+      context.fillStyle=sample.color;context.fillRect(0,0,16,16);
+      context.fillStyle='#23304a';context.fillRect(4,4,8,8);
+      const now=new Date().toISOString();
+      const note={id:sample.id,title:sample.title,tag:sample.tag,content:sample.content,images:[{name:'imagen-de-prueba.png',dataUrl:canvas.toDataURL('image/png')}],audioIds:[],createdAt:now,updatedAt:now};
+      await put('notes',note);existingNotes.push(note);
+    }
+    await refresh();
+  }catch(error){alert(storageError(error));}
 }
 function statCard(value,title,caption){
   const card=el('div','stat-card');
@@ -362,7 +579,7 @@ function summary(v){
     l.forEach((x,i)=>{const it=el('div','item'+(i%2?' pb':''));const im=el('img');im.src=x.dataUrl;it.append(im,el('div',0,(i+1)+'. '+(x.note||x.name)+' (Corte '+corteOf(x)+', '+new Date(x.date).toLocaleDateString('es-CO')+')'));pr.appendChild(it);});
     $('rm').textContent='En la ventana de impresión elige "Guardar como PDF".';setTimeout(()=>window.print(),300);};
 }
-$('nHome').onclick=()=>go('home');$('nUp').onclick=()=>go('upload',null);$('nSub').onclick=()=>go('subjects');$('big').onclick=()=>$('big').style.display='none';
+$('nHome').onclick=()=>go('home');$('nNotes').onclick=()=>go('notes');$('nUp').onclick=()=>go('upload',null);$('nSub').onclick=()=>go('subjects');$('big').onclick=()=>$('big').style.display='none';
 let installPrompt=null;
 window.addEventListener('beforeinstallprompt',event=>{
   event.preventDefault();
