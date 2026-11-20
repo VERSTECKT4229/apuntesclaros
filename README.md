@@ -8,9 +8,9 @@ Aplicación web en español para organizar apuntes de estudio con notas de texto
 
 Abre la demo HTTPS y envía este enlace a quien vaya a probarla:
 
-**https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html**
+**https://raw.githack.com/VERSTECKT4229/apuntesclaros/be3f1222ee2844a656cd728c737a51eb0c6c1f48/index.html**
 
-Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar voz, concede permiso de micrófono en Chrome o Edge. El dictado depende del navegador y puede usar el servicio de voz de su proveedor.
+Si aparece el aviso de raw.githack, pulsa **Open the page**. Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar voz, concede permiso de micrófono en Chrome o Edge. El dictado depende del navegador y puede usar el servicio de voz de su proveedor.
 
 La URL oficial de GitHub Pages es https://versteckt4229.github.io/apuntesclaros/. Si muestra 404, el propietario debe abrir [Settings → Pages](https://github.com/VERSTECKT4229/apuntesclaros/settings/pages), elegir **GitHub Actions** como fuente y guardar. El workflow del repositorio no puede habilitar Pages por sí solo con los permisos actuales.
 
