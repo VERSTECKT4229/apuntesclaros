@@ -8,7 +8,7 @@ Aplicación web en español para organizar apuntes de estudio con notas de texto
 
 Abre la demo HTTPS y envía este enlace a quien vaya a probarla:
 
-**https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html**
+**https://raw.githack.com/VERSTECKT4229/apuntesclaros/55f229a2a338947cfce5ee91f73d6dac34d2c885/index.html**
 
 Si aparece el aviso de raw.githack, pulsa **Open the page**. Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar la grabación de audio, concede permiso de micrófono en Chrome o Edge.
 

@@ -3,7 +3,7 @@
 ## Enlaces
 
 - Repositorio público: https://github.com/VERSTECKT4229/apuntesclaros
-- Demo HTTPS para compartir: https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html (si aparece la advertencia, pulsa **Open the page**).
+- Demo HTTPS para compartir: https://raw.githack.com/VERSTECKT4229/apuntesclaros/55f229a2a338947cfce5ee91f73d6dac34d2c885/index.html (si aparece la advertencia, pulsa **Open the page**).
 - GitHub Pages: https://versteckt4229.github.io/apuntesclaros/ (requiere habilitar Pages con **GitHub Actions** en Settings → Pages).
 
 ## Alcance implementado
