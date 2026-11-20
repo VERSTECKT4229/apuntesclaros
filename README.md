@@ -10,7 +10,7 @@ Abre la demo HTTPS y envía este enlace a quien vaya a probarla:
 
 **https://raw.githack.com/VERSTECKT4229/apuntesclaros/main/index.html**
 
-Si aparece el aviso de raw.githack, pulsa **Open the page**. Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar voz, concede permiso de micrófono en Chrome o Edge. El dictado depende del navegador y puede usar el servicio de voz de su proveedor.
+Si aparece el aviso de raw.githack, pulsa **Open the page**. Cada persona guarda sus notas, imágenes y audios únicamente en su propio navegador; esta demo no sincroniza datos entre usuarios. Para probar la grabación de audio, concede permiso de micrófono en Chrome o Edge.
 
 La URL oficial de GitHub Pages es https://versteckt4229.github.io/apuntesclaros/. Si muestra 404, el propietario debe abrir [Settings → Pages](https://github.com/VERSTECKT4229/apuntesclaros/settings/pages), elegir **GitHub Actions** como fuente y guardar. El workflow del repositorio no puede habilitar Pages por sí solo con los permisos actuales.
 
@@ -19,17 +19,17 @@ La URL oficial de GitHub Pages es https://versteckt4229.github.io/apuntesclaros/
 - CRUD de notas: crear, consultar, editar y eliminar.
 - Búsqueda por título, etiqueta/categoría y contenido; filtro por etiqueta.
 - Adjuntar imágenes seleccionadas o pegadas desde el portapapeles. Se valida el tipo y la decodificación, y se comprime antes de guardarlas.
-- Dictado en español (`es-CO`) dentro de las notas cuando el navegador ofrece Web Speech API; no hay dictado en las pantallas de materias.
+- Ingreso manual del contenido de cada nota.
 - Grabación con MediaRecorder, reproducción y eliminación de archivos asociados a notas.
 - Carga no destructiva de tres notas de prueba.
 - Aplicación instalable (PWA) y recursos estáticos almacenables en caché para uso sin conexión.
 
-No se envían notas, imágenes ni grabaciones a un servidor de ApuntesClaros. Web Speech API es una función provista por el navegador: el procesamiento y la posible transmisión de audio de dictado dependen de la implementación y la configuración del navegador, no de esta aplicación.
+No se envían notas, imágenes ni grabaciones a un servidor de ApuntesClaros. La aplicación no incorpora dictado por voz; el texto de las notas se ingresa manualmente. La grabación local con MediaRecorder requiere permiso de micrófono.
 
 ## Requisitos
 
 - Google Chrome o Microsoft Edge actualizado para la mejor compatibilidad.
-- Para micrófono, abrir la aplicación en `localhost` o HTTPS y conceder permiso. La disponibilidad de dictado depende del soporte de Web Speech API del navegador.
+- Para grabar audio, abrir la aplicación en `localhost` o HTTPS y conceder permiso de micrófono.
 - El navegador debe permitir almacenamiento local (IndexedDB) y disponer de espacio suficiente.
 
 ## Instalación y ejecución
@@ -46,18 +46,18 @@ Abre `index.html` directamente para revisar la interfaz, o usa **Live Server** e
 ## Uso
 
 1. En **Notas**, crea una nota con título y contenido o al menos una imagen; añade una etiqueta opcional.
-2. Selecciona imágenes o pega una captura con `Ctrl+V`. En el contenido de la nota, usa **Dictar** para incorporar texto reconocido en vivo, si está disponible.
+2. Escribe el contenido de la nota. Selecciona imágenes o pega una captura con `Ctrl+V`.
 3. Usa **Iniciar grabación** y **Detener grabación** para adjuntar audio. Guarda la nota para persistir la grabación. Cada archivo se puede reproducir o eliminar desde la edición de la nota; las grabaciones no se transcriben.
 4. Busca por título, etiqueta o contenido; abre una nota para editarla o eliminarla.
 5. Pulsa **Cargar datos de prueba** para agregar tres notas identificadas como pruebas. La acción no elimina ni reemplaza datos existentes, y volver a pulsarla no duplica las muestras.
 
-El dictado solo transcribe voz en vivo en el contenido de una nota. No se ofrece transcripción automática de grabaciones: Web Speech API no procesa un Blob ya grabado. Integrar un modelo local verificable requeriría decidir y distribuir/descargar pesos de modelo (por ejemplo, un modelo Whisper pequeño ronda decenas de MB, además del runtime y memoria de trabajo). No se simula la transcripción ni se sube el audio.
+El dictado por voz se excluyó de esta entrega porque su disponibilidad dependía del navegador, sus permisos y un servicio externo, y no se pudo verificar de forma fiable. El contenido debe escribirse manualmente. Tampoco se ofrece transcripción automática de grabaciones: integrar un modelo local requeriría decidir y distribuir o descargar sus pesos, además de incorporar runtime y consumo de memoria/CPU. No se simula la transcripción ni se sube el audio.
 
 ## Almacenamiento y limitaciones
 
 Los datos permanecen en el almacenamiento del perfil del navegador y no se sincronizan entre dispositivos. Borrar los datos del sitio o cambiar de navegador/perfil puede eliminarlos. El navegador impone una cuota que puede variar; al agotarse, la aplicación informa del error y conserva la interfaz operativa. IndexedDB guarda blobs de audio para evitar colocar archivos grandes en `localStorage`.
 
-El dictado integrado usa la implementación de Web Speech API del navegador y puede necesitar conexión o servicios del proveedor del navegador. La grabación local con MediaRecorder no requiere enviar el archivo a un servicio remoto. La transcripción de audio grabado no está implementada.
+La grabación local con MediaRecorder no requiere enviar el archivo a un servicio remoto. La transcripción de audio grabado no está implementada.
 
 ## Flujo técnico
 
@@ -65,7 +65,7 @@ El dictado integrado usa la implementación de Web Speech API del navegador y pu
 Interfaz HTML/CSS
        |
        v
-JavaScript Vanilla ----> Speech API (dictado en vivo)
+JavaScript Vanilla ----> MediaRecorder (captura local de audio)
        |                 Canvas (validación/compresión de imagen)
        v
 IndexedDB local (notas, materias, imágenes y blobs de audio)

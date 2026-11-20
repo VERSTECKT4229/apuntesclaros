@@ -207,43 +207,11 @@ function noteForm(v){
   title.id='noteTitle';tag.id='noteTag';content.id='noteContent';
   title.placeholder='Título';title.maxLength=160;title.value=note.title;
   tag.placeholder='Etiqueta o categoría';tag.maxLength=60;tag.value=note.tag||'';
-  content.placeholder='Escribe o dicta el contenido de la nota';content.rows=6;content.style.width='100%';content.value=note.content||'';
+  content.placeholder='Escribe el contenido de la nota';content.rows=6;content.style.width='100%';content.value=note.content||'';
   const titleLabel=el('label',0,'Título'),tagLabel=el('label',0,'Etiqueta o categoría'),contentLabel=el('label',0,'Contenido');
   titleLabel.htmlFor=title.id;tagLabel.htmlFor=tag.id;contentLabel.htmlFor=content.id;
   panel.append(titleLabel,title,tagLabel,tag,contentLabel,content);
   const feedback=el('div','msg mu','');panel.appendChild(feedback);
-  const dictation=el('div','row'),dictate=el('button','main','Dictar'),dictationStatus=el('span','mu','');
-  const privacyNotice=el('p','mu','El procesamiento de voz depende del navegador y puede usar un servicio de su proveedor.');
-  dictationStatus.setAttribute('role','status');dictationStatus.setAttribute('aria-live','polite');
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  let recognition=null,dictationBase='',dictationFinal='';
-  if(!SpeechRecognition)dictationStatus.textContent='Dictado no disponible en este navegador.';
-  dictate.onclick=()=>{
-    if(!SpeechRecognition){dictationStatus.textContent='Prueba Chrome o Edge con permiso de micrófono.';return;}
-    if(recognition){recognition.stop();dictationStatus.textContent='Deteniendo dictado…';return;}
-    if(!window.isSecureContext||location.protocol==='file:'){
-      dictationStatus.textContent='El dictado requiere HTTPS o localhost. Abre el enlace HTTPS o usa Live Server.';
-      return;
-    }
-    try{
-      recognition=new SpeechRecognition();recognition.lang='es-CO';recognition.interimResults=true;recognition.continuous=true;
-      dictationBase=content.value.trim();dictationFinal='';
-      recognition.onresult=event=>{
-        let interim='';
-        for(let i=event.resultIndex;i<event.results.length;i++){
-          const text=event.results[i][0].transcript.trim();
-          if(event.results[i].isFinal)dictationFinal+=(dictationFinal?' ':'')+text;
-          else interim+=(interim?' ':'')+text;
-        }
-        content.value=(dictationBase+' '+dictationFinal+' '+interim).trim();
-      };
-      recognition.onerror=event=>{dictationStatus.textContent=DICT_ERR[event.error]||'No se pudo usar el dictado: '+event.error;};
-      recognition.onstart=()=>{dictate.textContent='Detener dictado';dictationStatus.textContent='Escuchando… habla ahora.';};
-      recognition.onend=()=>{recognition=null;dictate.textContent='Dictar';if(dictationStatus.textContent.indexOf('Escuchando')===0||dictationStatus.textContent==='Solicitando permiso del micrófono…')dictationStatus.textContent='Dictado detenido.';};
-      recognition.start();dictationStatus.textContent='Solicitando permiso del micrófono…';
-    }catch(error){recognition=null;dictationStatus.textContent=DICT_ERR[error.name]||'No se pudo activar el micrófono: '+(error.message||error.name);}
-  };
-  dictation.append(dictate,dictationStatus);panel.append(dictation,privacyNotice);
   const file=el('input');file.type='file';file.accept='image/*';file.multiple=true;
   const pasteInfo=el('p','mu','También puedes pegar capturas con Ctrl+V dentro de este formulario.');
   const imageList=el('div','row');
@@ -267,7 +235,7 @@ function noteForm(v){
   file.onchange=()=>{addImageFiles(Array.from(file.files||[]));file.value='';};
   panel.append(el('label',0,'Imágenes adjuntas'),file,pasteInfo,imageList);drawImages();
   const audioHeading=el('h3',0,'Grabaciones de audio');
-  const audioInfo=el('p','mu','Las grabaciones se guardan y pueden reproducirse o eliminarse. No se transcriben automáticamente; usa “Dictar” para voz en vivo en el contenido.');
+  const audioInfo=el('p','mu','Las grabaciones se guardan y pueden reproducirse o eliminarse. No se transcriben automáticamente.');
   const audioControls=el('div','row'),record=el('button','main','Iniciar grabación'),audioList=el('div','row');
   let recorder=null,stream=null,chunks=[];
   function renderAudio(clip,id,isNew){
@@ -312,7 +280,6 @@ function noteForm(v){
     if(!cleanTitle){feedback.textContent='Escribe un título antes de guardar.';title.focus();return;}
     if(!cleanContent&&!images.length){feedback.textContent='Añade contenido o al menos una imagen antes de guardar.';content.focus();return;}
     if(recorder&&recorder.state==='recording'){recorder.stop();feedback.textContent='Grabación detenida. Pulsa Guardar nota de nuevo cuando aparezca el archivo.';return;}
-    if(recognition){recognition.stop();recognition=null;}
     const ids=(note.audioIds||[]).filter(id=>!removedAudioIds.has(id));
     const clips=newAudio.map(clip=>({...clip,noteId:note.id}));
     const saved={...note,title:cleanTitle,tag:tag.value.trim(),content:cleanContent,images,audioIds:[...ids,...clips.map(clip=>clip.id)],updatedAt:new Date().toISOString()};
@@ -366,16 +333,6 @@ function subject(v){
   const g=el('div','grid');v.appendChild(g);const e=el('p','mu','Aún no hay apuntes aquí.');v.appendChild(e);
   function draw(l){g.innerHTML='';e.hidden=l.length>0;l.forEach((p,i)=>g.appendChild(card(p,i,col)));}draw(list);
 }
-const DICT_ERR={
-  'not-allowed':'El navegador bloqueó el micrófono. Permite el acceso desde el candado de la dirección e inténtalo de nuevo.',
-  'service-not-allowed':'El dictado fue bloqueado por el navegador. Usa Chrome o Edge sobre HTTPS o Live Server.',
-  'network':'El dictado necesita Internet. Revisa tu conexión e inténtalo de nuevo.',
-  'no-speech':'No se detectó voz. Revisa el micrófono y habla más cerca.',
-  'audio-capture':'No se encontró un micrófono disponible. Conecta uno y vuelve a intentarlo.',
-  'language-not-supported':'El idioma español no está disponible en este navegador.',
-  'aborted':'El dictado se detuvo antes de reconocer texto. Inténtalo de nuevo.'
-};
-
 function card(p,i,col){
   const d=el('div','ph'+(p.reviewed?' done':''));d.style.setProperty('--c',col);d.style.setProperty('--r',((i*37)%7-3)*.5+'deg');
   const im=el('img');im.src=p.dataUrl;im.alt=p.note||p.name;im.onclick=()=>{$('big').querySelector('img').src=p.dataUrl;$('big').style.display='flex';};

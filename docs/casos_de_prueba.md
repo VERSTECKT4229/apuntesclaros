@@ -2,15 +2,15 @@
 
 Los resultados son parciales cuando no se cubrió cada paso del caso. Ninguno se declara aprobado si queda pendiente la prueba real de micrófono, grabación o cuota.
 
-## PF-01 — Flujo de nota, texto, imagen y voz
+## PF-01 — Flujo de nota, texto, imagen y audio
 
-- **Propósito:** verificar alta/consulta/edición de una nota de texto con imagen, dictado en vivo dentro de la nota, grabación, reproducción y eliminación del audio asociado; confirmar que el dictado no aparece en Materias.
-- **Precondiciones:** Chrome o Edge actualizado; sitio servido en `localhost` o HTTPS; IndexedDB disponible; permiso de micrófono y dispositivo de audio funcional.
-- **Pasos:** abrir Notas; crear título, texto y etiqueta; seleccionar una imagen y pegar otra; dictar una frase en español; iniciar/detener grabación; guardar; reproducir; recargar; editar la nota y quitar una grabación; guardar.
-- **Esperado:** la búsqueda/filtro encuentra la nota; imágenes comprimidas y audio quedan asociados; el dictado agrega texto al contenido solo dentro de la nota; el audio se reproduce tras recargar y muestra que no se transcribe; edición se persiste.
-- **Obtenido:** En navegador integrado se creó, consultó, editó, recargó y eliminó una nota de texto; se seleccionó una imagen y se simuló el evento `paste` con archivo de imagen. Dictado y grabación física no se ejecutaron.
+- **Propósito:** verificar alta/consulta/edición de una nota con texto manual e imagen, además del guardado y reproducción del audio asociado.
+- **Precondiciones:** Chrome o Edge actualizado; sitio servido en `localhost` o HTTPS; IndexedDB disponible. Permiso de micrófono y dispositivo funcional para los pasos de grabación.
+- **Pasos:** abrir Notas; crear título, escribir contenido y añadir etiqueta; seleccionar una imagen y pegar otra; iniciar/detener grabación; guardar; reproducir; recargar; editar la nota y quitar una grabación; guardar.
+- **Esperado:** el campo permite escribir y guardar contenido manual; la búsqueda/filtro encuentra la nota; imágenes comprimidas y audio quedan asociados; el audio se reproduce tras recargar y se indica que no se transcribe; edición se persiste.
+- **Obtenido:** En la demo HTTPS se verificó que el campo de contenido acepta escritura manual; se canceló la nota de prueba sin guardarla. En una ejecución previa se creó, editó, recargó y eliminó una nota y se probó la selección/pegado simulado de imagen. No se probó grabación física; el dictado se retiró de esta entrega.
 - **Estado:** Parcial.
-- **Evidencia:** ejecución interactiva en `file://`; rutas implementadas en `app.js`. Falta validar micrófono, MediaRecorder y persistencia de un audio real.
+- **Evidencia:** ejecución interactiva en `file://` y demo HTTPS; rutas implementadas en `app.js`. Falta validar MediaRecorder y persistencia de un audio real.
 
 ## PF-02 — Nota vacía y archivo inválido
 
@@ -22,13 +22,13 @@ Los resultados son parciales cuando no se cubrió cada paso del caso. Ninguno se
 - **Estado:** Parcial.
 - **Evidencia:** ejecución interactiva en `file://`; validación y compresión en `app.js`.
 
-## PF-03 — Navegador sin voz y cuota agotada
+## PF-03 — Permiso de grabación y cuota agotada
 
-- **Propósito:** comprobar la alternativa sin SpeechRecognition y el manejo de errores de cuota.
-- **Precondiciones:** navegador sin `SpeechRecognition`/`webkitSpeechRecognition` o entorno de prueba que lo desactive; cuota local agotada o simulada mediante DevTools.
-- **Pasos:** abrir editor sin API de voz; comprobar mensaje y guardar una nota escrita; forzar error de cuota al guardar una nota/imagen/audio.
-- **Esperado:** la escritura manual sigue disponible; se muestra error amigable de soporte; al agotarse cuota se informa que el almacenamiento está lleno sin romper la interfaz.
-- **Obtenido:** El navegador de prueba sí expone SpeechRecognition; no se probó navegador sin la API ni agotamiento real/simulado de cuota.
+- **Propósito:** comprobar el mensaje de permiso denegado al grabar audio y el manejo de errores de cuota.
+- **Precondiciones:** aplicación abierta en `localhost` o HTTPS; micrófono bloqueado por el navegador; cuota local agotada o simulada mediante DevTools.
+- **Pasos:** intentar iniciar grabación sin permiso; confirmar que se muestra un error y la interfaz sigue disponible; forzar error de cuota al guardar una nota/imagen/audio.
+- **Esperado:** mensaje claro para el permiso de micrófono denegado; al agotarse cuota se informa que el almacenamiento está lleno sin romper la interfaz.
+- **Obtenido:** En el navegador integrado, el estado del permiso de micrófono aparece como denegado, pero no se solicitó acceso ni se inició una grabación. Cuota no probada.
 - **Estado:** Pendiente.
 - **Evidencia:** ramas de soporte y `QuotaExceededError` en `app.js`; falta evidencia de navegador.
 
@@ -48,4 +48,4 @@ Los resultados son parciales cuando no se cubrió cada paso del caso. Ninguno se
 - Se cargaron los recursos por HTTP local; se verificaron las rutas de CSS, JavaScript, manifest e icono.
 - Se comprobó navegación y carga de recursos sin red mediante el Service Worker.
 - La carga de datos de prueba se invocó dos veces con una nota de muestra previa (ID aleatorio del formato anterior): quedaron tres notas en total, la previa se conservó y no se duplicó.
-- No se ha probado micrófono/dispositivo real, navegador sin Web Speech API, cuota agotada ni comportamiento offline en Chrome/Edge físicos.
+- No se ha probado micrófono/dispositivo real para MediaRecorder, cuota agotada ni comportamiento offline en Chrome/Edge físicos. El dictado por voz se excluyó de esta entrega.

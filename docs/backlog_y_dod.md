@@ -5,16 +5,17 @@
 - [x] Navegación y CRUD local de notas con título, contenido, etiqueta e imágenes.
 - [x] Búsqueda por título, etiqueta y contenido; filtro de etiqueta.
 - [x] Selección y pegado de imágenes, validación MIME/decodificación y compresión con Canvas.
-- [x] Dictado en vivo en español solo en el contenido de notas, con indicación de estado y mensajes de soporte/permisos.
+- [x] Eliminación del control de dictado no fiable; el editor conserva el ingreso manual de texto.
 - [x] Grabación local mediante MediaRecorder; blobs y metadatos persisten en IndexedDB; reproducción y eliminación asociadas a la nota.
 - [x] Manejo visible de notas incompletas y errores de persistencia, incluida cuota agotada.
 - [x] Tres notas de prueba distinguibles, con imágenes generadas como data URL base64 y etiquetas; carga idempotente que no borra, reemplaza ni duplica datos.
-- [x] Aviso visible de que las grabaciones se guardan y reproducen, pero no se transcriben; no presenta dictado en vivo como transcripción del archivo.
+- [x] Aviso visible de que las grabaciones se guardan y reproducen, pero no se transcriben.
 - [x] Documentación del alcance, limitaciones, flujo y casos de prueba.
 
 ## Pendientes (v2)
 
 - [ ] Elegir, integrar y evaluar un motor/modelo local para transcribir archivos de audio. Un modelo Whisper pequeño implica pesos del orden de decenas de MB (la variante `tiny` multilingüe ronda 75 MB), runtime adicional y consumo considerable de memoria/CPU; falta decidir carga inicial frente a descarga bajo demanda, licencia, idiomas y dispositivos mínimos.
+- [ ] Evaluar una alternativa de dictado fiable para futuras versiones; el dictado Web Speech se excluyó de esta entrega porque depende del navegador, permisos y servicios externos, y no se verificó de forma fiable.
 - [ ] Ejecutar pruebas manuales de micrófono, permisos, grabación, reproducción, cuota agotada, portapapeles y operación sin red en Chrome y Edge reales.
 - [ ] Definir estrategia de exportación/importación para notas y blobs de audio. El respaldo previo solo cubre materias y fotos.
 - [ ] Evaluar accesibilidad con teclado/lector de pantalla y añadir confirmación/recuperación para acciones destructivas si los usuarios lo requieren.
@@ -23,6 +24,7 @@
 
 - **Backend, cuentas, sincronización y nube:** se descartan porque la consigna delimita la entrega a una aplicación 100 % client-side, sin servicios ni bases de datos externas. Implicarían infraestructura y envío de datos que contradicen el alcance y las expectativas de privacidad.
 - **Trabajo colaborativo remoto y flujo de múltiples ramas:** se descartan para esta entrega individual. GitHub Flow se adapta a una persona mediante cambios acotados, historial y publicación del incremento; no se atribuyen revisiones o colaboración que no estén verificadas.
+- **Dictado Web Speech en esta entrega:** se retiró el control porque el texto no aparecía de forma fiable en el entorno de uso. Las notas se completan escribiendo manualmente; no se presenta una función de dictado que no se pudo validar.
 - **Transcripción simulada o envío del audio grabado a un proveedor externo:** descartados por no ser una transcripción genuinamente local y contradecir el requisito de no subir audio.
 
 ## DoD aplicado

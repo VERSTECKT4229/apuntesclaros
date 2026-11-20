@@ -1,5 +1,5 @@
-const CACHE = 'apuntesclaros-v10';
-const ASSETS = ['./', './index.html', './styles.css', './app.js?v=10', './manifest.webmanifest', './icon.svg'];
+const CACHE = 'apuntesclaros-v11';
+const ASSETS = ['./', './index.html', './styles.css', './app.js?v=11', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
